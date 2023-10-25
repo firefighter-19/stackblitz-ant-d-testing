@@ -1,0 +1,8 @@
+<app-main-header></app-main-header>
+
+<nav>
+  <a *ngFor="let route of routes" [routerLink]="route.route">{{
+    route.title
+  }}</a>
+</nav>
+<router-outlet></router-outlet>
