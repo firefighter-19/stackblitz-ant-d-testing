@@ -1,8 +1,15 @@
-<app-main-header></app-main-header>
-
-<nav>
-  <a *ngFor="let route of routes" [routerLink]="route.route">{{
-    route.title
-  }}</a>
-</nav>
-<router-outlet></router-outlet>
+<nz-layout nzLa>
+  <nz-header
+    ><app-main-header>
+      <nav>
+        <a *ngFor="let route of routes" [routerLink]="route.route">{{
+          route.title
+        }}</a>
+      </nav>
+    </app-main-header></nz-header
+  >
+  <nz-content>
+    <div class="content__wrapper"><router-outlet></router-outlet></div>
+  </nz-content>
+  <nz-footer>Footer</nz-footer>
+</nz-layout>

@@ -1,1 +1,12 @@
-<h1>Hello, it's angular NZ-ZORRO testing zone</h1>
+<ng-container>
+  <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24 }">
+    <h1 nz-col nzSpan="12">
+      <a [routerLink]="'/'" class="white">
+        Hello, it's angular NZ-ZORRO testing zone
+      </a>
+    </h1>
+    <div nz-col nzSpan="12">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</ng-container>
