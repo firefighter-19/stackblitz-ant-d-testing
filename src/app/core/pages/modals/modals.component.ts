@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
+  OnDestroy,
   ViewContainerRef,
   inject,
 } from "@angular/core";
@@ -10,6 +10,7 @@ import { NzModalService, NzModalModule } from "ng-zorro-antd/modal";
 import { IlluminationResultComponent } from "src/app/shared/modals/illumination-result/illumination-result.component";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzGridModule } from "ng-zorro-antd/grid";
+import { Subject, takeUntil } from "rxjs";
 
 @Component({
   selector: "app-modals",
@@ -19,10 +20,10 @@ import { NzGridModule } from "ng-zorro-antd/grid";
   styleUrls: ["./modals.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalsComponent {
+export class ModalsComponent implements OnDestroy {
   private readonly modalService = inject(NzModalService);
   private readonly containerRef = inject(ViewContainerRef);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly destroyRef$ = new Subject<boolean>();
 
   createIlluminationModal(): void {
     const modal = this.modalService.create({
@@ -31,11 +32,17 @@ export class ModalsComponent {
       nzOkText: "Yes",
       nzCancelText: "No",
       nzCentered: true,
+      nzWidth: "600px",
       nzViewContainerRef: this.containerRef,
       nzOnOk: () => {
-        console.log("321 ===========>: ", 321);
+        // here we provide logic of what happens in the end
       },
     });
-    modal.afterClose.pipe().subscribe();
+    modal.afterClose.pipe(takeUntil(this.destroyRef$)).subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.destroyRef$.next(true);
+    this.destroyRef$.complete();
   }
 }

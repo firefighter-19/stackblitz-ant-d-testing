@@ -1,1 +1,77 @@
-<p>illumination-result works!</p>
+<form [formGroup]="getForm">
+  <div nz-row nzAlign="middle" [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+    <div nz-col nzSpan="2">
+      <button nz-button (click)="addMeasure()" nzType="primary">
+        <span nz-icon nzType="edit" nzTheme="outline"></span>
+      </button>
+    </div>
+    <span nz-col nzSpan="6" nz-typography nzType="secondary">Измерения</span>
+  </div>
+  <ng-template
+    *ngTemplateOutlet="
+      getMeasures.value.length ? measureRef : null;
+      context: {
+        form: getForm
+      }
+    "
+  ></ng-template>
+</form>
+
+<ng-template let-form="form" #measureRef>
+  <nz-divider></nz-divider>
+  <div
+    [formGroup]="measure"
+    *ngFor="let measure of form.controls.measures.controls; let i = index"
+  >
+    <span nz-typography nzType="secondary">Измерение {{ i + 1 }}</span>
+    <div
+      nz-row
+      [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }"
+      nzJustify="end"
+      nzAlign="bottom"
+    >
+      <div nz-col nzSpan="10">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-form-label>Дата и время</nz-form-label>
+            <nz-date-picker
+              formControlName="date"
+              nzShowTime
+              nzFormat="yyyy-MM-dd HH:mm:ss"
+            ></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="6">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-form-label>Значение</nz-form-label>
+            <nz-input-number
+              formControlName="result"
+              [nzMin]="1"
+              [nzMax]="10"
+              [nzStep]="1"
+            ></nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4">
+        <nz-form-item>
+          <nz-form-control>
+            <button
+              nz-button
+              nzType="primary"
+              (click)="removeMeasure(i)"
+              nzDanger
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </div>
+  <nz-divider></nz-divider>
+  <nz-form-label>Рассчитать</nz-form-label>
+  <label nz-checkbox [formControl]="form.controls.countResult"></label>
+</ng-template>
