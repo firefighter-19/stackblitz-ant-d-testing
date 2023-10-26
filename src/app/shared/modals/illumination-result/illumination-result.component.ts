@@ -1,8 +1,8 @@
+import { uncertaintyTypes } from "./illumination-result.utils";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  importProvidersFrom,
   inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -19,6 +19,7 @@ import { NzInputNumberModule } from "ng-zorro-antd/input-number";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzDividerModule } from "ng-zorro-antd/divider";
 import { NzCheckboxModule } from "ng-zorro-antd/checkbox";
+import { NzSelectModule } from "ng-zorro-antd/select";
 
 @Component({
   selector: "app-illumination-result",
@@ -33,6 +34,7 @@ import { NzCheckboxModule } from "ng-zorro-antd/checkbox";
     NzIconModule,
     NzDividerModule,
     NzCheckboxModule,
+    NzSelectModule,
   ],
   templateUrl: "./illumination-result.component.html",
   styleUrls: ["./illumination-result.component.css"],
@@ -42,10 +44,13 @@ export class IlluminationResultComponent {
   private readonly fb = inject(FormBuilder);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly form = this.createForm();
+  readonly uncertaintyTypes = uncertaintyTypes;
 
   private createForm(): FormGroup {
     return this.fb.group({
-      measures: this.fb.array([]),
+      uncertainty_type: [null],
+      coverage_rate: [null],
+      measures: this.fb.array([this.createMeasure()]),
       countResult: [false],
     });
   }

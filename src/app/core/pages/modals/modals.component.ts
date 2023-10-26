@@ -27,18 +27,23 @@ export class ModalsComponent implements OnDestroy {
 
   createIlluminationModal(): void {
     const modal = this.modalService.create({
-      nzTitle: "illumination",
+      nzTitle: "Ввод значений",
       nzContent: IlluminationResultComponent,
-      nzOkText: "Yes",
-      nzCancelText: "No",
+      nzOkText: "Сохранить",
+      nzCancelText: "Отменить",
       nzCentered: true,
       nzWidth: "600px",
       nzViewContainerRef: this.containerRef,
-      nzOnOk: () => {
-        // here we provide logic of what happens in the end
+      nzOnOk: ({ getForm }) => {
+        return getForm.value;
+      },
+      nzOnCancel: () => {
+        modal.close();
       },
     });
-    modal.afterClose.pipe(takeUntil(this.destroyRef$)).subscribe();
+    modal.afterClose
+      .pipe(takeUntil(this.destroyRef$))
+      .subscribe((res) => console.log(res));
   }
 
   ngOnDestroy(): void {

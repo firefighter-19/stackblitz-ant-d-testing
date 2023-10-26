@@ -1,4 +1,38 @@
 <form [formGroup]="getForm">
+  <div nz-row [nzGutter]="24">
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label nzRequired>
+          <span nz-typography nzType="secondary">Неопределенность</span>
+        </nz-form-label>
+        <nz-form-control>
+          <nz-select nzShowSearch formControlName="uncertainty_type">
+            <nz-option
+              [nzValue]="type.value"
+              [nzLabel]="type.name"
+              *ngFor="let type of uncertaintyTypes"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label nzRequired>
+          <span nz-typography nzType="secondary">Коэффициент охвата</span>
+        </nz-form-label>
+        <nz-form-control>
+          <nz-input-number
+            style="width: 100%"
+            [nzMin]="0"
+            [nzStep]="1"
+            formControlName="coverage_rate"
+          >
+          </nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
   <div nz-row nzAlign="middle" [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
     <div nz-col nzSpan="2">
       <button nz-button (click)="addMeasure()" nzType="primary">
@@ -9,7 +43,7 @@
   </div>
   <ng-template
     *ngTemplateOutlet="
-      getMeasures.value.length ? measureRef : null;
+      measureRef;
       context: {
         form: getForm
       }
