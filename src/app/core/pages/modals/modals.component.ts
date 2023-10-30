@@ -4,20 +4,20 @@ import {
   OnDestroy,
   ViewContainerRef,
   inject,
-} from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { NzModalService, NzModalModule } from "ng-zorro-antd/modal";
-import { IlluminationResultComponent } from "src/app/shared/modals/illumination-result/illumination-result.component";
-import { NzButtonModule } from "ng-zorro-antd/button";
-import { NzGridModule } from "ng-zorro-antd/grid";
-import { Subject, takeUntil } from "rxjs";
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NzModalService, NzModalModule } from 'ng-zorro-antd/modal';
+import { IlluminationResultComponent } from 'src/app/shared/modals/illumination-result/illumination-result.component';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: "app-modals",
+  selector: 'app-modals',
   standalone: true,
   imports: [CommonModule, NzButtonModule, NzModalModule, NzGridModule],
-  templateUrl: "./modals.component.html",
-  styleUrls: ["./modals.component.css"],
+  templateUrl: './modals.component.html',
+  styleUrls: ['./modals.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalsComponent implements OnDestroy {
@@ -27,19 +27,12 @@ export class ModalsComponent implements OnDestroy {
 
   createIlluminationModal(): void {
     const modal = this.modalService.create({
-      nzTitle: "Ввод значений",
+      nzTitle: 'Ввод значений',
       nzContent: IlluminationResultComponent,
-      nzOkText: "Сохранить",
-      nzCancelText: "Отменить",
       nzCentered: true,
-      nzWidth: "600px",
+      nzWidth: '600px',
       nzViewContainerRef: this.containerRef,
-      nzOnOk: ({ getForm }) => {
-        return getForm.value;
-      },
-      nzOnCancel: () => {
-        modal.close();
-      },
+      nzClosable: true,
     });
     modal.afterClose
       .pipe(takeUntil(this.destroyRef$))

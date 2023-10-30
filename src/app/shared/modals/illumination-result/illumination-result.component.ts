@@ -1,81 +1,77 @@
-import { uncertaintyTypes } from "./illumination-result.utils";
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  inject,
-} from "@angular/core";
-import { CommonModule } from "@angular/common";
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-} from "@angular/forms";
-import { NzDatePickerModule } from "ng-zorro-antd/date-picker";
-import { NzFormModule } from "ng-zorro-antd/form";
-import { NzButtonModule } from "ng-zorro-antd/button";
-import { NzInputNumberModule } from "ng-zorro-antd/input-number";
-import { NzIconModule } from "ng-zorro-antd/icon";
-import { NzDividerModule } from "ng-zorro-antd/divider";
-import { NzCheckboxModule } from "ng-zorro-antd/checkbox";
-import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { UncertaintyFormComponent } from '../../components/forms/uncertainty-form/uncertainty-form.component';
+import { MeasuringFormComponent } from '../../components/forms/measuring-form/measuring-form.component';
+import { MeasuringFormService } from '../../components/forms/measuring-form/measuring-form.service';
+import { UncertaintyFormService } from '../../components/forms/uncertainty-form/uncertainty-form.service';
+import { NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { MeasuringModel, MeasuringPoint } from '../../models/measuring.model';
+import { FormGroup } from '@angular/forms';
 
 @Component({
-  selector: "app-illumination-result",
+  selector: 'app-illumination-result',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    NzDatePickerModule,
-    NzFormModule,
-    NzButtonModule,
-    NzInputNumberModule,
-    NzIconModule,
+    UncertaintyFormComponent,
     NzDividerModule,
-    NzCheckboxModule,
-    NzSelectModule,
+    MeasuringFormComponent,
+    NzModalModule,
+    NzButtonModule,
   ],
-  templateUrl: "./illumination-result.component.html",
-  styleUrls: ["./illumination-result.component.css"],
+  templateUrl: './illumination-result.component.html',
+  providers: [MeasuringFormService, UncertaintyFormService],
+  styleUrls: ['./illumination-result.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IlluminationResultComponent {
-  private readonly fb = inject(FormBuilder);
-  private readonly cdr = inject(ChangeDetectorRef);
-  private readonly form = this.createForm();
-  readonly uncertaintyTypes = uncertaintyTypes;
+  private readonly uncertainFormService = inject(UncertaintyFormService);
+  private readonly measureFormService = inject(MeasuringFormService);
+  private readonly modalRef = inject(NzModalRef);
 
-  private createForm(): FormGroup {
-    return this.fb.group({
-      uncertainty_type: [null],
-      coverage_rate: [null],
-      measures: this.fb.array([this.createMeasure()]),
-      countResult: [false],
-    });
+  get uncertainForm(): FormGroup {
+    return this.uncertainFormService.getUncertaintyForm;
   }
 
-  get getForm(): FormGroup {
-    return this.form;
+  get measureForm(): FormGroup {
+    return this.measureFormService.getMeasureForm;
   }
 
-  get getMeasures(): FormArray {
-    return this.form.controls["measures"] as FormArray;
+  handleCancel(): void {
+    this.modalRef.destroy();
   }
 
-  addMeasure() {
-    this.getMeasures.push(this.createMeasure());
-    this.cdr.detectChanges();
+  handleOk(): void {
+    const { is_calculated, measures } = this.measureForm.value;
+    const { coverage_rate, uncertainty_type } = this.uncertainForm.value;
+
+    const hotWaterResultForm: MeasuringModel = {
+      measuring_points: measures,
+      is_calculated,
+      result: this.getResult(),
+      coverage_rate,
+      measuring: this.getAverageMeasured(),
+      uncertainty: this.getUncertainty(),
+      values_for_uncertainty: measures.map(
+        (measure: MeasuringPoint) => measure.measured
+      ),
+      rounded_measuring: +this.getAverageMeasured().toFixed(1),
+      uncertainty_type,
+    };
+    this.modalRef.destroy(hotWaterResultForm);
   }
 
-  removeMeasure(index: number) {
-    this.getMeasures.removeAt(index);
+  private getResult(): string {
+    return '0';
   }
 
-  private createMeasure(): FormGroup {
-    return this.fb.group({
-      date: [new Date()],
-      result: [null],
-    });
+  private getAverageMeasured(): number {
+    return 0;
+  }
+
+  private getUncertainty(): number {
+    return 0;
   }
 }
