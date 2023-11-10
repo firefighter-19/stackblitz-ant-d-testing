@@ -1,0 +1,28 @@
+.table {
+  width: 100%;
+}
+
+.table-header {
+  border-spacing: 30px;
+}
+
+.table-form-item {
+  margin: 0;
+}
+
+.table-average {
+  max-width: 60px;
+}
+
+.table-input {
+  max-width: 210px;
+}
+
+.table-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-btn-del {
+  padding-left: 30px;
+}

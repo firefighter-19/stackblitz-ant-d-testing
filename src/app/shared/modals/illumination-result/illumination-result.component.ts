@@ -1,5 +1,10 @@
 import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UncertaintyFormComponent } from '../../components/forms/uncertainty-form/uncertainty-form.component';
 import { MeasuringFormComponent } from '../../components/forms/measuring-form/measuring-form.component';
@@ -9,6 +14,7 @@ import { NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { MeasuringModel, MeasuringPoint } from '../../models/measuring.model';
 import { FormGroup } from '@angular/forms';
+import { debounce, debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 @Component({
   selector: 'app-illumination-result',
@@ -16,8 +22,8 @@ import { FormGroup } from '@angular/forms';
   imports: [
     CommonModule,
     UncertaintyFormComponent,
-    NzDividerModule,
     MeasuringFormComponent,
+    NzDividerModule,
     NzModalModule,
     NzButtonModule,
   ],
@@ -26,7 +32,13 @@ import { FormGroup } from '@angular/forms';
   styleUrls: ['./illumination-result.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IlluminationResultComponent {
+export class IlluminationResultComponent implements OnInit {
+  ngOnInit(): void {
+    console.log(
+      'variableName ===========>: ',
+      this.measureFormService.getMeasureForm.value
+    );
+  }
   private readonly uncertainFormService = inject(UncertaintyFormService);
   private readonly measureFormService = inject(MeasuringFormService);
   private readonly modalRef = inject(NzModalRef);

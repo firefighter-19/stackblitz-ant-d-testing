@@ -11,6 +11,7 @@ import { IlluminationResultComponent } from 'src/app/shared/modals/illumination-
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { Subject, takeUntil } from 'rxjs';
+import { BrightnessComponent } from 'src/app/shared/modals/brightness/brightness.component';
 
 @Component({
   selector: 'app-modals',
@@ -31,6 +32,20 @@ export class ModalsComponent implements OnDestroy {
       nzContent: IlluminationResultComponent,
       nzCentered: true,
       nzWidth: '600px',
+      nzViewContainerRef: this.containerRef,
+      nzClosable: true,
+    });
+    modal.afterClose
+      .pipe(takeUntil(this.destroyRef$))
+      .subscribe((res) => console.log(res));
+  }
+
+  createBrightnessModal(): void {
+    const modal = this.modalService.create({
+      nzTitle: 'Ввод значений',
+      nzContent: BrightnessComponent,
+      nzCentered: true,
+      nzWidth: '100%',
       nzViewContainerRef: this.containerRef,
       nzClosable: true,
     });

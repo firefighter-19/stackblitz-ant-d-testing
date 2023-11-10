@@ -1,17 +1,13 @@
-<ng-container>
-  <app-uncertainty-form></app-uncertainty-form>
-  <app-measuring-form></app-measuring-form>
-  <div *nzModalFooter>
-    <button nz-button nzType="default" (click)="handleCancel()">
-      Отменить
-    </button>
-    <button
-      nz-button
-      nzType="primary"
-      (click)="handleOk()"
-      [disabled]="uncertainForm.invalid || measureForm.invalid"
-    >
-      Cохранить
-    </button>
-  </div>
-</ng-container>
+<app-uncertainty-form></app-uncertainty-form>
+<app-measuring-form></app-measuring-form>
+<div *nzModalFooter>
+  <button nz-button nzType="default" (click)="handleCancel()">Отменить</button>
+  <button
+    nz-button
+    nzType="primary"
+    (click)="handleOk()"
+    [disabled]="uncertainForm.invalid || measureForm.invalid"
+  >
+    Cохранить
+  </button>
+</div>

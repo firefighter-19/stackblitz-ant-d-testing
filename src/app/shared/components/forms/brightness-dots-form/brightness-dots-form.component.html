@@ -1,0 +1,136 @@
+<table [formGroup]="measureForm" class="table" cellpadding="10">
+  <thead>
+    <th>
+      <span>№ Точки по порядку</span>
+    </th>
+    <th>
+      <button
+        nz-button
+        (click)="addMeasureGroup()"
+        nzType="primary"
+        [disabled]="getMeasures.length > 9"
+      >
+        <span nz-icon nzType="edit" nzTheme="outline"></span>
+      </button>
+    </th>
+    <th>Точки</th>
+    <th *ngFor="let name of getMeasuresCol.controls; let i = index">
+      Изм. {{ i + 1 }}
+    </th>
+    <th>
+      <button
+        nz-button
+        (click)="addMeasure()"
+        nzType="primary"
+        [disabled]="getMeasuresCol.length > 9"
+      >
+        <span nz-icon nzType="edit" nzTheme="outline"></span>
+      </button>
+    </th>
+    <th>Освещённость, лк</th>
+    <th>Выводить на печать</th>
+    <th></th>
+  </thead>
+  <tbody formArrayName="measurements">
+    <ng-container
+      *ngFor="let measureForm of getMeasures.controls; let i = index"
+    >
+      <ng-container [formGroup]="measureForm">
+        <tr class="table-row">
+          <td>
+            <nz-form-item class="table-form-item">
+              <nz-form-control>
+                <nz-form-label>{{ i + 1 }}</nz-form-label>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td>
+            <button nz-button nzType="primary">
+              <span nz-icon nzType="copy" nzTheme="outline"></span>
+            </button>
+          </td>
+          <td>
+            <nz-form-item class="table-form-item">
+              <nz-form-control>
+                <input nz-input formControlName="name" class="table-input" />
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <ng-container
+            formArrayName="measured"
+            *ngFor="let measure of getMeasureRow(i).controls; let k = index"
+          >
+            <td [formGroup]="measure">
+              <nz-form-item class="table-form-item">
+                <nz-form-control>
+                  <nz-input-number
+                    (ngModelChange)="onMeasureChange(i)"
+                    [formControlName]="k"
+                    [nzMin]="1"
+                    [nzMax]="100"
+                    [nzStep]="1"
+                  ></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+          </ng-container>
+          <td></td>
+          <td>
+            <nz-form-item class="table-form-item table-average">
+              <nz-form-control>
+                <input nz-input formControlName="average" [disabled]="true" />
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td>
+            <nz-form-item class="table-form-item">
+              <nz-form-control>
+                <label nz-checkbox formControlName="is_printed"></label>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td>
+            <nz-form-item class="table-form-item">
+              <nz-form-control>
+                <button
+                  *ngIf="getMeasures.length > 1"
+                  nz-button
+                  nzType="primary"
+                  (click)="removeMeasureGroup(i)"
+                  nzDanger
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td
+        *ngFor="let name of getMeasuresCol.controls; let i = index"
+        class="table-btn-del"
+      >
+        <button
+          nz-button
+          nzType="primary"
+          nzDanger
+          (click)="removeMeasure(i)"
+          *ngIf="getMeasuresCol.length > 3"
+        >
+          <span nz-icon nzType="delete" nzTheme="outline"></span>
+        </button>
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>

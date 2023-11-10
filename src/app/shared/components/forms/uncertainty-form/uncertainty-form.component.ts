@@ -7,6 +7,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { uncertaintyTypes } from 'src/app/shared/utils/models/uncertainty.utils-model';
 import { UncertaintyFormService } from './uncertainty-form.service';
+import { NzGridModule } from 'ng-zorro-antd/grid';
 
 @Component({
   selector: 'app-uncertainty-form',
@@ -17,6 +18,7 @@ import { UncertaintyFormService } from './uncertainty-form.service';
     NzFormModule,
     NzInputNumberModule,
     NzIconModule,
+    NzGridModule,
     NzSelectModule,
   ],
   templateUrl: './uncertainty-form.component.html',
