@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
 } from '@angular/core';
 import {
   FormArray,
@@ -24,6 +26,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { StrPipe } from './keo-dots.utils';
 import { KEO_TYPE } from './keo-dots.model';
+import { KeoGroup } from 'src/app/shared/modals/keo-measure/keo-meausre.model';
 
 @Component({
   selector: 'app-keo-dots-form',
@@ -50,16 +53,19 @@ import { KEO_TYPE } from './keo-dots.model';
 })
 export class KeoDotsFormComponent implements OnInit {
   readonly ELEMENTS_IN_GROUP = 2;
-  uncertaintyType = null;
   constructor(
     private readonly cdr: ChangeDetectorRef,
     private readonly keoDotsService: KeoDotsFormService
   ) {}
+  @Input() set updateKeoGroup(params: )
   @Input() set setUncertaintyType(status: boolean) {
     this.keoDotsService.manageKeoResultDisabled(status);
   }
+  @Input() uncertaintyType: string | null = null;
+  @Output() provideMeasurements = new EventEmitter<KeoGroup>();
+
   ngOnInit(): void {
-    this.keoForm.valueChanges.subscribe((x) => console.log(x));
+    // this.keoForm.valueChanges.subscribe((x) => console.log(x));
   }
 
   provideUnique(index: number): number {
@@ -87,59 +93,20 @@ export class KeoDotsFormComponent implements OnInit {
 
   onCopyRow(index: number): void {
     this.keoDotsService.copyKeoGroup(index);
-    // this.onMeasureChange(this.getKeoGroups.length - 1);
   }
-
-  // private calculateAverageValues(numbers: Record<string, number>[]): number {
-  //   const { amount, filteredElements } = numbers.reduce(
-  //     (
-  //       sum: { amount: number; filteredElements: number[] },
-  //       value: Record<string, number>,
-  //       index: number
-  //     ) => {
-  //       if (typeof value[index] === 'number') {
-  //         sum.amount += value[index];
-  //         sum.filteredElements.push(value[index]);
-  //       }
-  //       return sum;
-  //     },
-  //     { amount: 0, filteredElements: [] }
-  //   );
-  //   return isNaN(amount / filteredElements.length)
-  //     ? 0
-  //     : amount / filteredElements.length;
-  // }
-
-  // onMeasureChange(index: number): void {
-  //   const rowValues: Record<string, number>[] = (
-  //     this.getKeosMeasureRow(index) as FormArray
-  //   ).value;
-
-  //   const rowAverageValue = this.calculateAverageValues(rowValues);
-
-  //   this.keoDotsService.updateKeoPercent(index, +rowAverageValue.toFixed(2));
-  //   const averageValues = this.getKeoGroups
-  //     .getRawValue()
-  //     .reduce((acc: number[], { average }: any) => {
-  //       if (average) {
-  //         acc.push(average);
-  //       }
-  //       return acc;
-  //     }, []);
-  //   (this.getKeosMeasureRow(index) as FormArray).updateValueAndValidity({
-  //     onlySelf: true
-  //   });
-  //   // this.emitAverageValues.emit(averageValues);
-  // }
 
   addKeoGroup(): void {
     this.keoDotsService.addKeoGroup();
     this.cdr.detectChanges();
   }
 
+  emitMeasurements(i: number): void {
+    const groupValues: KeoGroup = this.getKeoGroups.value[i];
+    this.provideMeasurements.emit(groupValues);
+  }
+
   removeKeoGroup(index: number): void {
     this.keoDotsService.removeKeoGroup(index);
-    // this.onMeasureChange(this.getKeoGroups.length - 1);
   }
 
   addMeasure(): void {

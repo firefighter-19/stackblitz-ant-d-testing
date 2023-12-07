@@ -17,6 +17,8 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { KeoGroup, KeoUpdate } from './keo-meausre.model';
+import { KeoMeasureService } from './keo-measure.service';
 
 const uncertaintyType = [
   { value: 'calculated', name: 'Расчетная' },
@@ -46,9 +48,11 @@ const uncertaintyType = [
 export class KeoMeasureComponent implements OnInit {
   private readonly uncertaintyFormService = inject(UncertaintyFormService);
   private readonly keoDotsFormService = inject(KeoDotsFormService);
+  private readonly keoMeasureService = inject(KeoMeasureService);
   // constructor(
   //   private readonly uncertaintyFormService: UncertaintyFormService,
-  //   private readonly keoDotsFormService: KeoDotsFormService
+  //   private readonly keoDotsFormService: KeoDotsFormService,
+  //   private readonly keoMeasureService: KeoMeasureService
   // ) {}
   @Input({
     required: false,
@@ -60,6 +64,12 @@ export class KeoMeasureComponent implements OnInit {
     }
   }
   readonly uncertaintyTypes = uncertaintyType;
+
+  getKeoMeasurements(params: KeoUpdate): void {
+    const { index, ...rest } =
+      this.keoMeasureService.getKeoGroupCalculations(params);
+    this.keoDotsFormService.updateKeoPercent(index);
+  }
 
   handleCancel(): void {}
 

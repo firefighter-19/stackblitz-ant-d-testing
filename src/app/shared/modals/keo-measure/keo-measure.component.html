@@ -15,7 +15,9 @@
   </div>
 </div>
 <div nz-row>
-  <app-keo-dots-form></app-keo-dots-form>
+  <app-keo-dots-form
+    (provideMeasurements)="getKeoMeasurements($event)"
+  ></app-keo-dots-form>
 </div>
 <div *nzModalFooter>
   <button nz-button nzType="default" (click)="handleCancel()">Закрыть</button>

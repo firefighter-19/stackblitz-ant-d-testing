@@ -3,6 +3,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { Observable, filter } from 'rxjs';
 import { KeoMeasureComponent } from './keo-measure.component';
 import { IClientIndicator } from '../../models/protocol.model';
+import { KeoUpdate } from './keo-meausre.model';
 
 @Injectable()
 export class KeoMeasureService {
@@ -55,5 +56,16 @@ export class KeoMeasureService {
       //     );
       // })
     );
+  }
+
+  getKeoGroupCalculations(group: KeoUpdate): KeoUpdate {
+    const result: KeoUpdate = {
+      ...group,
+      keo_result: 1,
+      measurements: group.measurements.reduce((acc, cur) => {
+        return acc;
+      }, []),
+    };
+    return result;
   }
 }

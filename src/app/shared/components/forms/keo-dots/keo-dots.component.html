@@ -87,6 +87,7 @@
                     [nzMin]="1"
                     [nzMax]="10"
                     [nzStep]="0.01"
+                    (ngModelChange)="emitMeasurements(i)"
                     [formControlName]="keoMeasure.key | stringPipe"
                   >
                   </nz-input-number>
