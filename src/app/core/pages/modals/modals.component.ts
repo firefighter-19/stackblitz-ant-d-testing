@@ -6,12 +6,13 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NzModalService, NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { IlluminationResultComponent } from 'src/app/shared/modals/illumination-result/illumination-result.component';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { Subject, takeUntil } from 'rxjs';
 import { BrightnessComponent } from 'src/app/shared/modals/brightness/brightness.component';
+import { KeoMeasureService } from 'src/app/shared/modals/keo-measure/keo-measure.service';
 
 @Component({
   selector: 'app-modals',
@@ -22,36 +23,44 @@ import { BrightnessComponent } from 'src/app/shared/modals/brightness/brightness
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalsComponent implements OnDestroy {
-  private readonly modalService = inject(NzModalService);
+  // private readonly modalService = inject(NzModalService);
   private readonly containerRef = inject(ViewContainerRef);
+  private readonly keoModalService = inject(KeoMeasureService);
   private readonly destroyRef$ = new Subject<boolean>();
 
   createIlluminationModal(): void {
-    const modal = this.modalService.create({
-      nzTitle: 'Ввод значений',
-      nzContent: IlluminationResultComponent,
-      nzCentered: true,
-      nzWidth: '600px',
-      nzViewContainerRef: this.containerRef,
-      nzClosable: true,
-    });
-    modal.afterClose
+    // const modal = this.modalService.create({
+    //   nzTitle: 'Ввод значений',
+    //   nzContent: IlluminationResultComponent,
+    //   nzCentered: true,
+    //   nzWidth: '600px',
+    //   nzViewContainerRef: this.containerRef,
+    //   nzClosable: true,
+    // });
+    // modal.afterClose
+    //   .pipe(takeUntil(this.destroyRef$))
+    //   .subscribe((res) => console.log(res));
+  }
+
+  createKeoModal(): void {
+    this.keoModalService
+      .openKeoMeasureModal([], this.containerRef)
       .pipe(takeUntil(this.destroyRef$))
-      .subscribe((res) => console.log(res));
+      .subscribe();
   }
 
   createBrightnessModal(): void {
-    const modal = this.modalService.create({
-      nzTitle: 'Ввод значений',
-      nzContent: BrightnessComponent,
-      nzCentered: true,
-      nzWidth: '100%',
-      nzViewContainerRef: this.containerRef,
-      nzClosable: true,
-    });
-    modal.afterClose
-      .pipe(takeUntil(this.destroyRef$))
-      .subscribe((res) => console.log(res));
+    // const modal = this.modalService.create({
+    //   nzTitle: 'Ввод значений',
+    //   nzContent: BrightnessComponent,
+    //   nzCentered: true,
+    //   nzWidth: '100%',
+    //   nzViewContainerRef: this.containerRef,
+    //   nzClosable: true,
+    // });
+    // modal.afterClose
+    //   .pipe(takeUntil(this.destroyRef$))
+    //   .subscribe((res) => console.log(res));
   }
 
   ngOnDestroy(): void {

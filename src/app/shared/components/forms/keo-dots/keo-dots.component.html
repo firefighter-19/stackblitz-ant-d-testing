@@ -1,0 +1,125 @@
+<nz-divider></nz-divider>
+<button
+  nz-button
+  (click)="addKeoGroup()"
+  nzType="primary"
+  [disabled]="getKeoGroupsLength > 9 && getKeoGroupsLength < 2"
+>
+  <span nz-icon nzType="edit" nzTheme="outline"></span>
+</button>
+<table [formGroup]="keoForm" class="table" cellpadding="10">
+  <ng-container
+    formArrayName="keo_groups"
+    *ngFor="let keoGroup of getKeoGroups.controls; let i = index"
+  >
+    <ng-container [formGroupName]="i">
+      <thead>
+        <th></th>
+        <th></th>
+        <th *ngFor="let name of getKeoMeasureCol.controls; let k = index">
+          Изм. {{ i > 0 ? i * getKeoMeasureCol.value.length + k + 1 : k + 1 }}
+        </th>
+      </thead>
+      <tbody>
+        <tr
+          class="table-row"
+          *ngFor="
+            let keoMeasure of getKeoMeasureValue | keyvalue;
+            trackBy: provideUnique;
+            let k = index
+          "
+        >
+          <ng-container
+            *ngFor="
+              let measure of getKeoMeasureCol.controls;
+              let innerI = index
+            "
+          >
+            <ng-container *ngIf="innerI === 0">
+              <td>
+                <nz-form-label>№ точки по порядку</nz-form-label>
+                <nz-form-item
+                  class="table-form-item"
+                  *ngIf="k === 0 || k === 1"
+                >
+                  <nz-input-number
+                    nzDisabled
+                    nzReadOnly
+                    [ngModel]="
+                      (i + 1) * ELEMENTS_IN_GROUP - ELEMENTS_IN_GROUP + k + 1
+                    "
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                  </nz-input-number>
+                </nz-form-item>
+                <nz-form-item *ngIf="k === 2"
+                  ><button nz-button nzType="primary" (click)="onCopyRow(i)">
+                    <span
+                      nz-icon
+                      nzType="copy"
+                      nzTheme="outline"
+                    ></span></button
+                ></nz-form-item>
+              </td>
+              <ng-container [ngSwitch]="k">
+                <td *ngSwitchCase="0">Е вн</td>
+                <td *ngSwitchCase="1">Е нар</td>
+                <td *ngSwitchCase="2">КЕО, %</td>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <ng-container formArrayName="measurements">
+            <td
+              *ngFor="
+                let measure of getKeoMeasureCol.controls;
+                let groupIndex = index;
+                trackBy: provideUnique
+              "
+            >
+              <nz-form-label nzNoColon></nz-form-label>
+              <nz-form-item
+                class="table-form-item"
+                [formGroupName]="groupIndex"
+              >
+                <nz-form-control>
+                  <nz-input-number
+                    class="table-input"
+                    [nzMin]="1"
+                    [nzMax]="10"
+                    [nzStep]="0.01"
+                    [formControlName]="keoMeasure.key | stringPipe"
+                  >
+                  </nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+          </ng-container>
+          <ng-container *ngIf="k === 1">
+            <td>
+              <button
+                nz-button
+                (click)="removeKeoGroup(k)"
+                nzType="primary"
+                [disabled]="getKeoGroups.length > 9"
+              >
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+              </button>
+            </td>
+            <td>
+              <nz-form-label>Результат расчёта КЕО</nz-form-label>
+              <nz-form-item class="table-form-item">
+                <nz-input-number
+                  nzDisabled
+                  nzReadOnly
+                  [ngModel]="1"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                </nz-input-number>
+              </nz-form-item>
+            </td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </ng-container>
+  </ng-container>
+</table>

@@ -16,6 +16,11 @@ import { MeasuringModel, MeasuringPoint } from '../../models/measuring.model';
 import { FormGroup } from '@angular/forms';
 import { debounce, debounceTime, distinctUntilChanged, map } from 'rxjs';
 
+const uncertaintyType = [
+  { value: 'calculated', name: 'Расчетная' },
+  { value: 'attributed', name: 'Приписанная' },
+];
+
 @Component({
   selector: 'app-illumination-result',
   standalone: true,
@@ -39,6 +44,8 @@ export class IlluminationResultComponent implements OnInit {
       this.measureFormService.getMeasureForm.value
     );
   }
+  readonly uncertaintyTypes = uncertaintyType;
+
   private readonly uncertainFormService = inject(UncertaintyFormService);
   private readonly measureFormService = inject(MeasuringFormService);
   private readonly modalRef = inject(NzModalRef);

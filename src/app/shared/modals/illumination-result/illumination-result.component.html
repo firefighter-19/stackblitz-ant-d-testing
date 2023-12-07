@@ -1,4 +1,6 @@
-<app-uncertainty-form></app-uncertainty-form>
+<app-uncertainty-form
+  [uncertaintyTypes]="uncertaintyTypes"
+></app-uncertainty-form>
 <app-measuring-form></app-measuring-form>
 <div *nzModalFooter>
   <button nz-button nzType="default" (click)="handleCancel()">Отменить</button>

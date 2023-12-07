@@ -6,7 +6,10 @@ import { MeasuringFormService } from '../../components/forms/measuring-form/meas
 import { UncertaintyFormService } from '../../components/forms/uncertainty-form/uncertainty-form.service';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { BrightnessDotsFormComponent } from '../../components/forms/brightness-dots-form/brightness-dots-form.component';
-
+const uncertaintyType = [
+  { value: 'calculated', name: 'Расчетная' },
+  { value: 'attributed', name: 'Приписанная' },
+];
 @Component({
   selector: 'app-brightness',
   standalone: true,
@@ -25,4 +28,6 @@ import { BrightnessDotsFormComponent } from '../../components/forms/brightness-d
   styleUrls: ['./brightness.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BrightnessComponent {}
+export class BrightnessComponent {
+  readonly uncertaintyTypes = uncertaintyType;
+}

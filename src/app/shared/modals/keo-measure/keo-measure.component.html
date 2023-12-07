@@ -1,0 +1,25 @@
+<div nz-row>
+  <div nz-col nzSpan="12">
+    <app-uncertainty-form
+      [uncertaintyTypes]="uncertaintyTypes"
+    ></app-uncertainty-form>
+  </div>
+  <div nzSpan="2" nz-col>
+    <span>Количество измерений в точке</span>
+    <input nz-input [value]="2" />
+  </div>
+
+  <div nzSpan="2" nz-col>
+    <span>Количество точек</span>
+    <input nz-input [disabled]="true" [value]="2" />
+  </div>
+</div>
+<div nz-row>
+  <app-keo-dots-form></app-keo-dots-form>
+</div>
+<div *nzModalFooter>
+  <button nz-button nzType="default" (click)="handleCancel()">Закрыть</button>
+  <button nz-button nzType="primary" (click)="handleOk()" [disabled]="true">
+    Cохранить
+  </button>
+</div>

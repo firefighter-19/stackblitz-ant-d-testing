@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -21,11 +26,15 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
     NzGridModule,
     NzSelectModule,
   ],
+  providers: [UncertaintyFormService],
   templateUrl: './uncertainty-form.component.html',
   styleUrls: ['./uncertainty-form.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UncertaintyFormComponent {
   readonly uncertaintyForm = inject(UncertaintyFormService).getUncertaintyForm;
-  readonly uncertaintyTypes = uncertaintyTypes;
+  @Input({
+    required: true,
+  })
+  uncertaintyTypes: any;
 }
