@@ -76,15 +76,22 @@ export class KeoDotsFormService {
     const measureGroup = (keoGroup.controls['measurements'] as FormArray)
       .controls[keo_measure_group_index] as FormGroup;
 
-    (keoGroup.controls['keo_result'] as FormControl).patchValue(keo_result, {
+    this.updateKeoGroupResult(
+      keoGroup.controls['keo_result'] as FormControl,
+      keo_result
+    );
+
+    this.updateKeoGroupResult(
+      measureGroup.controls['keo_percent'] as FormControl,
+      keo_percent
+    );
+  }
+
+  updateKeoGroupResult(group: FormGroup | FormControl, keo: number): void {
+    group.patchValue(keo, {
       emitEvent: false,
       onlySelf: true,
     });
-
-    (measureGroup.controls['keo_percent'] as FormControl).patchValue(
-      keo_percent,
-      { onlySelf: true, emitEvent: false }
-    );
   }
 
   copyKeoGroup(index: number, isKeoBlocked: boolean): void {

@@ -8,7 +8,12 @@ import {
 import { KeoDotsFormService } from 'src/app/shared/components/forms/keo-dots/keo-dots.service';
 import { KeoDotsFormComponent } from '../../components/forms/keo-dots/keo-dots.component';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormsModule,
+  FormGroup,
+  FormArray,
+} from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
@@ -89,16 +94,47 @@ export class KeoMeasureComponent implements OnInit {
 
   emitSquareValue(value: number): void {
     this.currentSquareParam = value;
+
+    (this.keoDotsFormService.getKeoGroup as FormArray).controls.forEach(
+      (group, keo_group_index) => {
+        const keoGroup = group as FormGroup;
+
+        (keoGroup.controls['measurements'] as FormArray).controls.forEach(
+          (value, keo_measure_group_index) => {
+            if ((value as FormGroup).controls['keo_percent'].getRawValue()) {
+              this.getKeoMeasurements({
+                keo_group_index,
+                keo_measure_group_index,
+              });
+            }
+          }
+        );
+      }
+    );
   }
 
   getKeoMeasurements(keoUpdateGroup: KeoUpdateGroup): void {
-    if (this.illumination_protocol) {
-      const { keo_percent, keo_result } =
+    if (this.illumination_protocol && this.currentSquareParam) {
+      const keo_percent =
+        this.currentSquareParam *
         this.keoMeasureService.getKeoGroupCalculations(
           keoUpdateGroup,
-          this.illumination_protocol,
-          this.currentSquareParam
+          this.illumination_protocol
         );
+      const keo_group_percents =
+        this.keoMeasureService.getAverageCalculationForGroup(
+          (
+            this.keoDotsFormService.getKeoGroup.controls[
+              keoUpdateGroup.keo_group_index
+            ] as FormGroup
+          ).getRawValue()['measurements']
+        );
+
+      const keo_result = this.keoMeasureService.calculateAverageKeo([
+        ...keo_group_percents,
+        keo_percent,
+      ]);
+
       this.keoDotsFormService.updateKeoResult({
         ...keoUpdateGroup,
         keo_percent,

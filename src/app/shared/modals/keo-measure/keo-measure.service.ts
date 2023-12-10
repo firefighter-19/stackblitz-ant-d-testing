@@ -15,23 +15,13 @@ export class KeoMeasureService {
 
   getKeoGroupCalculations(
     { keo_group_index, keo_measure_group_index }: KeoUpdateGroup,
-    protocol: KEO_PROTOCOLS,
-    currentSquareParam: number
-  ): KeoGroupResultCalculation {
+    protocol: KEO_PROTOCOLS
+  ): number {
     const keoGroup = this.keoDotsFormService.getKeoGroup.controls[
       keo_group_index
     ] as FormGroup;
     const measureGroup = (keoGroup.controls['measurements'] as FormArray)
       .controls[keo_measure_group_index] as FormGroup;
-
-    const getGroupAverage = keoGroup
-      .getRawValue()
-      ['measurements'].reduce((accPercent: number[], cur: KeoMeasurement) => {
-        if (cur.keo_percent) {
-          accPercent.push(cur.keo_percent);
-        }
-        return accPercent;
-      }, []);
 
     const calc = {
       [KEO_PROTOCOLS.working]: CalculationKeo.calculateForWorking(
@@ -39,14 +29,20 @@ export class KeoMeasureService {
       ),
       [KEO_PROTOCOLS.common]: {} as KeoMeasurement,
     };
-    const keoForMeasureGroup = currentSquareParam * calc[protocol].keo_percent;
-    return {
-      keo_percent: keoForMeasureGroup,
-      keo_result: this.calculateAverageKeo([
-        ...getGroupAverage,
-        keoForMeasureGroup,
-      ]),
-    };
+    return calc[protocol].keo_percent;
+  }
+
+  provideSquareCalculation(average: number[], square: number): number {
+    return average.reduce((acc, value) => acc + value * square, 0);
+  }
+
+  getAverageCalculationForGroup(group: KeoMeasurement[]): number[] {
+    return group.reduce((accPercent: number[], cur: KeoMeasurement) => {
+      if (cur.keo_percent) {
+        accPercent.push(cur.keo_percent);
+      }
+      return accPercent;
+    }, []);
   }
 
   calculateAverageKeo(keos: number[]): number {
