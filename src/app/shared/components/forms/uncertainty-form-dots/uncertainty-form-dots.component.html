@@ -1,0 +1,75 @@
+<form [formGroup]="uncertaintyForm" nz-form nzLayout="vertical">
+  <nz-form-item>
+    <nz-form-label nzRequired [nzSm]="6" [nzXs]="8">
+      <span nz-typography nzType="secondary">Неопределенность</span>
+    </nz-form-label>
+    <nz-form-control [nzSm]="4" [nzXs]="8">
+      <nz-select
+        nzShowSearch
+        formControlName="uncertainty_type"
+        (ngModelChange)="
+          emitUncertaintyType.emit(
+            uncertaintyForm.get('uncertainty_type')?.value
+          )
+        "
+      >
+        <nz-option
+          *ngFor="let type of uncertaintyTypes"
+          [nzValue]="type.value"
+          [nzLabel]="type.name"
+        ></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzRequired [nzSm]="6" [nzXs]="8">
+      <span nz-typography nzType="secondary">Коэффициент охвата</span>
+    </nz-form-label>
+    <nz-form-control [nzSm]="4" [nzXs]="8">
+      <nz-input-number
+        [nzMin]="0"
+        [nzStep]="1"
+        formControlName="coverage_rate"
+        style="width: 100%"
+        (ngModelChange)="
+          emitSquareValue.emit(uncertaintyForm.get('coverage_rate')?.value)
+        "
+      >
+      </nz-input-number>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzRequired [nzSm]="6" [nzXs]="8">
+      <span nz-typography nzType="secondary">Количество измерений в точке</span>
+    </nz-form-label>
+    <nz-form-control [nzSm]="4" [nzXs]="8">
+      <nz-input-number
+        [nzMin]="3"
+        [nzMax]="5"
+        [nzStep]="1"
+        formControlName="point_count"
+        (ngModelChange)="
+          emitDots.emit(uncertaintyForm.get('point_count')?.value)
+        "
+        style="width: 100%"
+      >
+      </nz-input-number>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzRequired nzRequired [nzSm]="6" [nzXs]="8">
+      <span nz-typography nzType="secondary">Количество точек</span>
+    </nz-form-label>
+    <nz-form-control [nzSm]="4" [nzXs]="8">
+      <nz-input-number
+        [nzMin]="1"
+        [nzMax]="5"
+        [nzStep]="1"
+        nzDisabled
+        formControlName="measurement_per_point"
+        style="width: 100%"
+      >
+      </nz-input-number>
+    </nz-form-control>
+  </nz-form-item>
+</form>

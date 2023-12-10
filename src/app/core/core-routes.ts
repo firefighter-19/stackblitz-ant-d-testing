@@ -7,6 +7,6 @@ export const CoreRoutes: Routes = [
     path: '',
     loadComponent: () =>
       import('./pages/modals/modals.component').then((c) => c.ModalsComponent),
-    providers: [NzModalService, KeoMeasureService],
+    providers: [NzModalService],
   },
 ];

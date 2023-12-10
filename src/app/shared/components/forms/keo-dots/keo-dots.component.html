@@ -1,5 +1,6 @@
 <nz-divider></nz-divider>
 <button
+  *ngIf="currentKeoType !== keo_type.horizontal"
   nz-button
   (click)="addKeoGroup()"
   nzType="primary"
@@ -7,7 +8,12 @@
 >
   <span nz-icon nzType="edit" nzTheme="outline"></span>
 </button>
-<table [formGroup]="keoForm" class="table" cellpadding="10">
+<table
+  [formGroup]="keoForm"
+  class="table"
+  cellpadding="10"
+  *ngIf="form | async"
+>
   <ng-container
     formArrayName="keo_groups"
     *ngFor="let keoGroup of getKeoGroups.controls; let i = index"
@@ -24,7 +30,7 @@
         <tr
           class="table-row"
           *ngFor="
-            let keoMeasure of getKeoMeasureValue | keyvalue;
+            let keoMeasure of keoGroupValues;
             trackBy: provideUnique;
             let k = index
           "
@@ -87,8 +93,10 @@
                     [nzMin]="1"
                     [nzMax]="10"
                     [nzStep]="0.01"
-                    (ngModelChange)="emitMeasurements(i)"
-                    [formControlName]="keoMeasure.key | stringPipe"
+                    (ngModelChange)="
+                      onChangeKeoMeasure(i, groupIndex, keoMeasure)
+                    "
+                    [formControlName]="keoMeasure"
                   >
                   </nz-input-number>
                 </nz-form-control>
@@ -112,8 +120,7 @@
                 <nz-input-number
                   nzDisabled
                   nzReadOnly
-                  [ngModel]="1"
-                  [ngModelOptions]="{ standalone: true }"
+                  formControlName="keo_result"
                 >
                 </nz-input-number>
               </nz-form-item>

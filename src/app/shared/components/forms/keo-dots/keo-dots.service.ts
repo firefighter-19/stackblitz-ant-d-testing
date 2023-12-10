@@ -1,6 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { KeoFormModel, KeoMeasureUpdateResult } from './keo-dots.model';
 
 @Injectable()
 export class KeoDotsFormService {
@@ -15,17 +21,17 @@ export class KeoDotsFormService {
     return this.form.controls['keo_groups'] as FormArray;
   }
 
-  manageKeoResultDisabled(status: boolean): void {
+  manageKeoResultDisabled(status: string): void {
     this.getKeoGroup.controls.forEach((group) => {
       (
         (group as FormGroup).controls['measurements'] as FormArray
       ).controls.forEach((measureGroup) => {
-        if (status) {
-          (measureGroup as FormGroup).controls['keo_result'].disable({
+        if (status === 'calculated') {
+          (measureGroup as FormGroup).controls['keo_percent'].disable({
             onlySelf: true,
           });
         } else {
-          (measureGroup as FormGroup).controls['keo_result'].enable({
+          (measureGroup as FormGroup).controls['keo_percent'].enable({
             onlySelf: true,
           });
         }
@@ -48,27 +54,43 @@ export class KeoDotsFormService {
     ].updateValueAndValidity({ onlySelf: true });
   }
 
-  addKeoGroup(): void {
+  addKeoGroup(isKeoBlocked: boolean): void {
     if (this.getKeoGroup.length < 10) {
-      this.getKeoGroup.push(this.createKeoGroup(this.getKeoCol.length - 1));
-      this.getKeoGroup.updateValueAndValidity({ onlySelf: true });
+      this.getKeoGroup.push(
+        this.createKeoGroup(this.getKeoCol.length - 1, isKeoBlocked)
+      );
+      this.getKeoGroup.updateValueAndValidity({
+        onlySelf: true,
+        emitEvent: false,
+      });
     }
   }
 
-  updateKeoGroup(measureGroupValue: any[]): void {
-    measureGroupValue.forEach((group, index) => {
-      this.addKeoGroup();
-      this.getKeoGroup.controls[index].patchValue(group);
-      this.getKeoGroup.controls[index].updateValueAndValidity({
-        onlySelf: true,
-      });
+  updateKeoResult({
+    keo_group_index,
+    keo_measure_group_index,
+    keo_percent,
+    keo_result,
+  }: KeoMeasureUpdateResult): void {
+    const keoGroup = this.getKeoGroup.controls[keo_group_index] as FormGroup;
+    const measureGroup = (keoGroup.controls['measurements'] as FormArray)
+      .controls[keo_measure_group_index] as FormGroup;
+
+    (keoGroup.controls['keo_result'] as FormControl).patchValue(keo_result, {
+      emitEvent: false,
+      onlySelf: true,
     });
+
+    (measureGroup.controls['keo_percent'] as FormControl).patchValue(
+      keo_percent,
+      { onlySelf: true, emitEvent: false }
+    );
   }
 
-  copyKeoGroup(index: number): void {
-    this.addKeoGroup();
+  copyKeoGroup(index: number, isKeoBlocked: boolean): void {
+    this.addKeoGroup(isKeoBlocked);
     const lastIndexGroup = this.getKeoGroup.length - 1;
-    const copiedRowData = this.getKeoGroup.controls[index].value;
+    const copiedRowData = this.getKeoGroup.controls[index].getRawValue();
     (this.getKeoGroup.controls[lastIndexGroup] as FormGroup).patchValue(
       copiedRowData
     );
@@ -86,14 +108,14 @@ export class KeoDotsFormService {
     }
   }
 
-  addKeoMeasure(): void {
+  addKeoMeasure(isKeoBlocked: boolean): void {
     const LIMIT_OF_COLUMNS = 10;
     if (this.getKeoCol.length < LIMIT_OF_COLUMNS) {
       this.getKeoGroup.controls.forEach((group) => {
         const measuredArray = (group as FormGroup).controls[
           'measurements'
         ] as FormArray;
-        measuredArray.push(this.createKeoMeasure());
+        measuredArray.push(this.createKeoMeasure(isKeoBlocked));
       });
     }
   }
@@ -107,36 +129,45 @@ export class KeoDotsFormService {
     });
   }
 
-  private createForm(groupsNum: number = 1, colNum: number = 4): FormGroup {
+  private createForm(
+    groupsNum: number = 1,
+    colNum: number = 4,
+    isKeoBlocked: boolean = true
+  ): FormGroup {
     const keo_form = this.fb.group({
       keo_groups: this.fb.array([]),
     });
     for (let group = 0; group < groupsNum; group++) {
       (keo_form.controls.keo_groups as FormArray).push(
-        this.createKeoGroup(colNum)
+        this.createKeoGroup(colNum, isKeoBlocked)
       );
     }
     return keo_form;
   }
 
-  private createKeoGroup(col: number): FormGroup {
+  private createKeoGroup(col: number, isKeoBlocked: boolean): FormGroup {
     const measureGroup = this.fb.group({
       keo_result: [null, Validators.required],
-      measurements: this.fb.array([this.createKeoMeasure() as FormGroup]),
+      measurements: this.fb.array([
+        this.createKeoMeasure(isKeoBlocked) as FormGroup,
+      ]),
     });
     for (let i = 0; i < col; i++) {
       (measureGroup.controls.measurements as FormArray).push(
-        this.createKeoMeasure() as FormGroup
+        this.createKeoMeasure(isKeoBlocked) as FormGroup
       );
     }
     return measureGroup;
   }
 
-  private createKeoMeasure(): FormGroup {
+  private createKeoMeasure(isKeoBlocked: boolean): FormGroup {
     return this.fb.group({
       e_inner: [null, Validators.required],
       e_outer: [null, Validators.required],
-      keo_percent: [null, Validators.required],
+      keo_percent: [
+        { value: null, disabled: isKeoBlocked },
+        Validators.required,
+      ],
     });
   }
 }

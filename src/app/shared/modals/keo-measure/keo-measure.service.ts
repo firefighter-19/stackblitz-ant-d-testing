@@ -1,71 +1,71 @@
-import { Injectable, ViewContainerRef, inject } from '@angular/core';
-import { NzModalService } from 'ng-zorro-antd/modal';
-import { Observable, filter } from 'rxjs';
-import { KeoMeasureComponent } from './keo-measure.component';
-import { IClientIndicator } from '../../models/protocol.model';
-import { KeoUpdate } from './keo-meausre.model';
+import { Injectable, inject } from '@angular/core';
+import {
+  KEO_PROTOCOLS,
+  KeoGroupResultCalculation,
+  KeoMeasurement,
+} from './keo-measure.model';
+import { KeoUpdateGroup } from '../../components/forms/keo-dots/keo-dots.model';
+import { KeoDotsFormService } from '../../components/forms/keo-dots/keo-dots.service';
+import { CalculationKeo } from './keo-measure.utils';
+import { FormGroup, FormArray } from '@angular/forms';
 
 @Injectable()
 export class KeoMeasureService {
-  private readonly modalService = inject(NzModalService);
+  private readonly keoDotsFormService = inject(KeoDotsFormService);
 
-  openKeoMeasureModal(
-    item: IClientIndicator['measurement_results'],
-    containerRef: ViewContainerRef
-  ): Observable<unknown | Error> {
-    const modal = this.modalService.create({
-      nzTitle: 'Ввод значений',
-      nzContent: KeoMeasureComponent,
-      // nzData: {
-      //   params: {
-      //     result: item.measurement_results?.result,
-      //     measurements: item.measurement_results?.measurements,
-      //     coverage_rate: item.measurement_results?.coverage_rate,
-      //     measuring: item.measurement_results?.measuring,
-      //     uncertainty: item.measurement_results?.uncertainty,
-      //     rounded_measuring: item.measurement_results?.rounded_measuring,
-      //     uncertainty_type: item.measurement_results?.uncertainty_type,
-      //     values_for_uncertainty:
-      //       item.measurement_results?.values_for_uncertainty,
-      //   },
-      // },
-      nzCentered: true,
-      nzWidth: '90vw',
-      nzViewContainerRef: containerRef,
-      nzClosable: true,
-    });
-    return modal.afterClose.pipe(
-      filter((value) => value)
-      // switchMap((brightnessResult: MeasuringModel) => {
-      //   return this.selectionPointsService
-      //     .updateIndicator(item.guid, {
-      //       ...item,
-      //       measurement_results: brightnessResult
-      //     })
-      //     .pipe(
-      //       map(() => brightnessResult),
-      //       catchError((err: Error) => {
-      //         return of(err).pipe(
-      //           tap(({ message }) => {
-      //             this.messageService.error(
-      //               `Произошла ошибка при попытке обновить данные по освещённости, ${message}`
-      //             );
-      //           })
-      //         );
-      //       })
-      //     );
-      // })
-    );
+  getKeoGroupCalculations(
+    { keo_group_index, keo_measure_group_index }: KeoUpdateGroup,
+    protocol: KEO_PROTOCOLS
+  ): KeoGroupResultCalculation {
+    const keoGroup = this.keoDotsFormService.getKeoGroup.controls[
+      keo_group_index
+    ] as FormGroup;
+    const measureGroup = (keoGroup.controls['measurements'] as FormArray)
+      .controls[keo_measure_group_index] as FormGroup;
+
+    const getGroupAverage = keoGroup
+      .getRawValue()
+      ['measurements'].reduce((accPercent: number[], cur: KeoMeasurement) => {
+        if (cur.keo_percent) {
+          accPercent.push(cur.keo_percent);
+        }
+        return accPercent;
+      }, []);
+
+    const calc = {
+      [KEO_PROTOCOLS.working]: CalculationKeo.calculateForWorking(
+        measureGroup.getRawValue()
+      ),
+      [KEO_PROTOCOLS.common]: {} as KeoMeasurement,
+    };
+    const keoForMeasureGroup = calc[protocol].keo_percent;
+    return {
+      keo_percent: keoForMeasureGroup,
+      keo_result: this.calculateAverageKeo([
+        ...getGroupAverage,
+        keoForMeasureGroup,
+      ]),
+    };
   }
 
-  getKeoGroupCalculations(group: KeoUpdate): KeoUpdate {
-    const result: KeoUpdate = {
-      ...group,
-      keo_result: 1,
-      measurements: group.measurements.reduce((acc, cur) => {
-        return acc;
-      }, []),
-    };
-    return result;
+  calculateAverageKeo(keos: number[]): number {
+    return keos.reduce((acc, cur) => acc + cur, 0) / keos.length;
+  }
+
+  changePointNumber(newPointsQuantity: number, isKeoBlocked: boolean): void {
+    const currentQuantity = this.keoDotsFormService.getKeoCol.length;
+    const isNeedToAdd = newPointsQuantity > currentQuantity;
+
+    const defineNewPoints = isNeedToAdd
+      ? newPointsQuantity - currentQuantity
+      : currentQuantity - newPointsQuantity;
+
+    for (let i = 0; i < defineNewPoints; i++) {
+      if (isNeedToAdd) {
+        this.keoDotsFormService.addKeoMeasure(isKeoBlocked);
+      } else {
+        this.keoDotsFormService.removeKeoMeasure(currentQuantity - i - 1);
+      }
+    }
   }
 }

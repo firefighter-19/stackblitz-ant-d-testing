@@ -4,8 +4,8 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
+  inject,
 } from '@angular/core';
 import {
   FormArray,
@@ -25,15 +25,16 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { StrPipe } from './keo-dots.utils';
-import { KEO_TYPE } from './keo-dots.model';
-import { KeoGroup } from 'src/app/shared/modals/keo-measure/keo-meausre.model';
+import { KEO_TYPE, KeoUpdateGroup } from './keo-dots.model';
+import { startWith } from 'rxjs';
 
+const KEO_GROUP_VALUES: string[] = ['e_inner', 'e_outer', 'keo_percent'];
 @Component({
   selector: 'app-keo-dots-form',
   templateUrl: './keo-dots.component.html',
   styleUrls: ['./keo-dots.component.scss'],
   standalone: true,
-  providers: [StrPipe, KeoDotsFormService],
+  providers: [StrPipe],
   imports: [
     CommonModule,
     NzGridModule,
@@ -51,22 +52,19 @@ import { KeoGroup } from 'src/app/shared/modals/keo-measure/keo-meausre.model';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class KeoDotsFormComponent implements OnInit {
+export class KeoDotsFormComponent {
+  private readonly keoDotsService = inject(KeoDotsFormService);
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly ELEMENTS_IN_GROUP = 2;
-  constructor(
-    private readonly cdr: ChangeDetectorRef,
-    private readonly keoDotsService: KeoDotsFormService
-  ) {}
-  @Input() set updateKeoGroup(params: )
-  @Input() set setUncertaintyType(status: boolean) {
-    this.keoDotsService.manageKeoResultDisabled(status);
-  }
-  @Input() uncertaintyType: string | null = null;
-  @Output() provideMeasurements = new EventEmitter<KeoGroup>();
+  readonly keo_type: typeof KEO_TYPE = KEO_TYPE;
+  readonly keoGroupValues = KEO_GROUP_VALUES;
+  readonly form = this.keoDotsService.getKeoForm.valueChanges.pipe(
+    startWith(true)
+  );
 
-  ngOnInit(): void {
-    // this.keoForm.valueChanges.subscribe((x) => console.log(x));
-  }
+  @Input() currentKeoType: KEO_TYPE | null = null;
+  @Output() emitKeoChanges = new EventEmitter<KeoUpdateGroup>();
+  @Input() isKeoBlocked: boolean = true;
 
   provideUnique(index: number): number {
     return index;
@@ -83,38 +81,41 @@ export class KeoDotsFormComponent implements OnInit {
     return this.keoDotsService.getKeoGroup as FormArray;
   }
 
-  get getKeoMeasureValue() {
-    return this.keoDotsService.getKeoCol.getRawValue()[0];
-  }
-
   get getKeoMeasureCol(): FormArray {
     return this.keoDotsService.getKeoCol as FormArray;
   }
 
   onCopyRow(index: number): void {
-    this.keoDotsService.copyKeoGroup(index);
+    this.keoDotsService.copyKeoGroup(index, this.isKeoBlocked);
   }
 
   addKeoGroup(): void {
-    this.keoDotsService.addKeoGroup();
-    this.cdr.detectChanges();
-  }
-
-  emitMeasurements(i: number): void {
-    const groupValues: KeoGroup = this.getKeoGroups.value[i];
-    this.provideMeasurements.emit(groupValues);
+    this.keoDotsService.addKeoGroup(this.isKeoBlocked);
   }
 
   removeKeoGroup(index: number): void {
     this.keoDotsService.removeKeoGroup(index);
+    this.cdr.detectChanges();
   }
 
-  addMeasure(): void {
-    this.keoDotsService.addKeoMeasure();
-  }
-
-  removeMeasure(index: number): void {
-    this.keoDotsService.removeKeoMeasure(index);
-    // this.onMeasureChange(this.getKeoGroups.length - 1);
+  onChangeKeoMeasure(
+    groupIndex: number,
+    keoColIndex: number,
+    keoMeasureType: string
+  ): void {
+    const measureGroup = (
+      (this.keoDotsService.getKeoGroup.controls[groupIndex] as FormGroup)
+        .controls['measurements'] as FormArray
+    ).controls[keoColIndex] as FormGroup;
+    if (
+      keoMeasureType !== 'keo_percent' &&
+      typeof measureGroup.value['e_inner'] === 'number' &&
+      typeof measureGroup.value['e_outer'] === 'number'
+    ) {
+      this.emitKeoChanges.emit({
+        keo_group_index: groupIndex,
+        keo_measure_group_index: keoColIndex,
+      });
+    }
   }
 }
