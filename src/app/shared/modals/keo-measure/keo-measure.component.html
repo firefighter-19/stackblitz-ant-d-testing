@@ -5,10 +5,13 @@
   [uncertaintyTypes]="uncertaintyTypes"
 ></app-uncertainty-form-dots>
 <app-keo-dots-form
-  [currentKeoType]="illumination_type"
+  [currentKeoType]="nzData.illumination_type"
   [isKeoBlocked]="isKeoBlockLocked"
   (emitKeoChanges)="getKeoMeasurements($event)"
+  (emitDotsCount)="emitAllGroupsDotsCount($event)"
 ></app-keo-dots-form>
+<nz-divider></nz-divider>
+<p>КЕО среднее, % 100 ± 5</p>
 <div *nzModalFooter>
   <button nz-button nzType="default" (click)="handleCancel()">Закрыть</button>
   <button nz-button nzType="primary" (click)="handleOk()" [disabled]="true">

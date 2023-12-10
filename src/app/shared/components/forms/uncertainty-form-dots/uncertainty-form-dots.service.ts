@@ -13,7 +13,7 @@ export class UncertaintyFormDotsService {
       uncertainty_type: [null],
       coverage_rate: [2],
       point_count: [5],
-      measurement_per_point: [null],
+      measurement_per_point: [2],
     });
   }
 

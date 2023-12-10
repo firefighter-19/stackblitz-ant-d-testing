@@ -1,4 +1,4 @@
-import { KeoFormModel } from '../../components/forms/keo-dots/keo-dots.model';
+import { KEO_TYPE } from '../../components/forms/keo-dots/keo-dots.model';
 import { UncertaintyDotsFormModel } from '../../components/forms/uncertainty-form-dots/uncertainty-form-dots.model';
 
 export interface KeoModel {
@@ -34,6 +34,7 @@ export type KeoGroupResultCalculation = Pick<KeoMeasurement, 'keo_percent'> &
   Pick<KeoGroup, 'keo_result'>;
 
 export type CombinedForms = {
-  keoDotsForm: KeoFormModel;
+  keo_groups: KeoGroup[];
+  illumination_type: KEO_TYPE;
   uncertaintyDotsForm: UncertaintyDotsFormModel;
 };

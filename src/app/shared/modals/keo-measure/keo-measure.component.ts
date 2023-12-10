@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
   OnInit,
   inject,
 } from '@angular/core';
@@ -19,15 +18,13 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
-import { NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
+import { NZ_MODAL_DATA, NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
 import { CombinedForms, KEO_PROTOCOLS } from './keo-measure.model';
 import { KeoMeasureService } from './keo-measure.service';
-import {
-  KEO_TYPE,
-  KeoUpdateGroup,
-} from '../../components/forms/keo-dots/keo-dots.model';
+import { KeoUpdateGroup } from '../../components/forms/keo-dots/keo-dots.model';
 import { UncertaintyFormDotsComponent } from '../../components/forms/uncertainty-form-dots/uncertainty-form-dots.component';
 import { UncertaintyFormDotsService } from '../../components/forms/uncertainty-form-dots/uncertainty-form-dots.service';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 const uncertaintyType = [
   { value: 'calculated', name: 'Расчетная' },
@@ -50,6 +47,7 @@ const uncertaintyType = [
     NzInputNumberModule,
     NzModalModule,
     NzButtonModule,
+    NzDividerModule,
   ],
   providers: [
     UncertaintyFormDotsService,
@@ -64,27 +62,31 @@ export class KeoMeasureComponent implements OnInit {
   private readonly keoDotsFormService = inject(KeoDotsFormService);
   private readonly keoMeasureService = inject(KeoMeasureService);
   private readonly modalRef = inject(NzModalRef);
+  readonly nzData = inject<CombinedForms>(NZ_MODAL_DATA);
 
-  @Input() illumination_type: KEO_TYPE | null = null;
-  @Input() illumination_protocol: KEO_PROTOCOLS | null = KEO_PROTOCOLS.working;
-
-  @Input()
-  params: CombinedForms | null = null;
+  illumination_protocol: KEO_PROTOCOLS | null = KEO_PROTOCOLS.working;
   currentSquareParam: number = 2;
-
   isKeoBlockLocked: boolean = true;
 
   ngOnInit(): void {
-    if (this.params) {
-      this.uncertaintyFormService.getUncertaintyForm.patchValue(
-        this.params.uncertaintyDotsForm
-      );
-      this.keoDotsFormService.getKeoForm.patchValue(this.params.keoDotsForm);
+    if (this.nzData) {
+      console.log('params ===========>: ', this.nzData);
+      // this.uncertaintyFormService.getUncertaintyForm.patchValue(
+      //   this.params.uncertaintyDotsForm
+      // );
+      this.emitAllGroupsDotsCount(this.nzData.keo_groups.length * 2);
+      this.nzData.keo_groups.forEach((group, index) => {
+        if (!this.keoDotsFormService.getKeoGroup.controls[index]) {
+          this.keoDotsFormService.addKeoGroup(this.isKeoBlockLocked);
+        }
+        this.keoDotsFormService.getKeoGroup.controls[index].patchValue(group);
+      });
     }
   }
 
   emitDotsQuantity(quantity: number): void {
     this.keoMeasureService.changePointNumber(quantity, this.isKeoBlockLocked);
+    this.updateForm();
   }
 
   emitUncertaintyType(type: string): void {
@@ -94,7 +96,16 @@ export class KeoMeasureComponent implements OnInit {
 
   emitSquareValue(value: number): void {
     this.currentSquareParam = value;
+    this.updateForm();
+  }
 
+  emitAllGroupsDotsCount(quantity: number): void {
+    this.uncertaintyFormService.getUncertaintyForm.controls[
+      'measurement_per_point'
+    ].patchValue(quantity);
+  }
+
+  private updateForm(): void {
     (this.keoDotsFormService.getKeoGroup as FormArray).controls.forEach(
       (group, keo_group_index) => {
         const keoGroup = group as FormGroup;

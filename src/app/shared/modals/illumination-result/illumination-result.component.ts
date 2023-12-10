@@ -37,13 +37,7 @@ const uncertaintyType = [
   styleUrls: ['./illumination-result.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IlluminationResultComponent implements OnInit {
-  ngOnInit(): void {
-    console.log(
-      'variableName ===========>: ',
-      this.measureFormService.getMeasureForm.value
-    );
-  }
+export class IlluminationResultComponent {
   readonly uncertaintyTypes = uncertaintyType;
 
   private readonly uncertainFormService = inject(UncertaintyFormService);

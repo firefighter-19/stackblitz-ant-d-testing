@@ -6,8 +6,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { KeoFormModel, KeoMeasureUpdateResult } from './keo-dots.model';
-
+import { KeoMeasureUpdateResult } from './keo-dots.model';
+const ELEMENTS_IN_GROUP = 2;
 @Injectable()
 export class KeoDotsFormService {
   private readonly fb = inject(FormBuilder);
@@ -19,6 +19,12 @@ export class KeoDotsFormService {
 
   get getKeoGroup(): FormArray {
     return this.form.controls['keo_groups'] as FormArray;
+  }
+
+  get getDotsCount(): number {
+    return (
+      (this.form.controls['keo_groups'] as FormArray).length * ELEMENTS_IN_GROUP
+    );
   }
 
   manageKeoResultDisabled(status: string): void {

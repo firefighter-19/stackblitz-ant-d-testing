@@ -43,21 +43,20 @@
           >
             <ng-container *ngIf="innerI === 0">
               <td>
-                <nz-form-label>№ точки по порядку</nz-form-label>
-                <nz-form-item
-                  class="table-form-item"
-                  *ngIf="k === 0 || k === 1"
-                >
-                  <nz-input-number
-                    nzDisabled
-                    nzReadOnly
-                    [ngModel]="
-                      (i + 1) * ELEMENTS_IN_GROUP - ELEMENTS_IN_GROUP + k + 1
-                    "
-                    [ngModelOptions]="{ standalone: true }"
-                  >
-                  </nz-input-number>
-                </nz-form-item>
+                <ng-container *ngIf="k === 0 || k === 1">
+                  <nz-form-label>№ точки по порядку</nz-form-label>
+                  <nz-form-item class="table-form-item">
+                    <nz-input-number
+                      nzDisabled
+                      nzReadOnly
+                      [ngModel]="
+                        (i + 1) * ELEMENTS_IN_GROUP - ELEMENTS_IN_GROUP + k + 1
+                      "
+                      [ngModelOptions]="{ standalone: true }"
+                    >
+                    </nz-input-number>
+                  </nz-form-item>
+                </ng-container>
                 <nz-form-item *ngIf="k === 2"
                   ><button nz-button nzType="primary" (click)="onCopyRow(i)">
                     <span

@@ -63,8 +63,9 @@ export class KeoDotsFormComponent {
   );
 
   @Input() currentKeoType: KEO_TYPE | null = null;
-  @Output() emitKeoChanges = new EventEmitter<KeoUpdateGroup>();
   @Input() isKeoBlocked: boolean = true;
+  @Output() emitKeoChanges = new EventEmitter<KeoUpdateGroup>();
+  @Output() emitDotsCount = new EventEmitter<number>();
 
   provideUnique(index: number): number {
     return index;
@@ -87,15 +88,18 @@ export class KeoDotsFormComponent {
 
   onCopyRow(index: number): void {
     this.keoDotsService.copyKeoGroup(index, this.isKeoBlocked);
+    this.emitDotsCount.emit(this.keoDotsService.getDotsCount);
   }
 
   addKeoGroup(): void {
     this.keoDotsService.addKeoGroup(this.isKeoBlocked);
+    this.emitDotsCount.emit(this.keoDotsService.getDotsCount);
   }
 
   removeKeoGroup(index: number): void {
     this.keoDotsService.removeKeoGroup(index);
     this.cdr.detectChanges();
+    this.emitDotsCount.emit(this.keoDotsService.getDotsCount);
   }
 
   onChangeKeoMeasure(

@@ -1,9 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  KEO_PROTOCOLS,
-  KeoGroupResultCalculation,
-  KeoMeasurement,
-} from './keo-measure.model';
+import { KEO_PROTOCOLS, KeoMeasurement } from './keo-measure.model';
 import { KeoUpdateGroup } from '../../components/forms/keo-dots/keo-dots.model';
 import { KeoDotsFormService } from '../../components/forms/keo-dots/keo-dots.service';
 import { CalculationKeo } from './keo-measure.utils';

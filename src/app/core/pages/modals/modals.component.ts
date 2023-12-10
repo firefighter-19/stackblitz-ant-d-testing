@@ -12,6 +12,8 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { Subject, filter, takeUntil } from 'rxjs';
 
 import { KeoMeasureComponent } from 'src/app/shared/modals/keo-measure/keo-measure.component';
+import { mockKeo } from './mock';
+import { KEO_TYPE } from 'src/app/shared/components/forms/keo-dots/keo-dots.model';
 
 @Component({
   selector: 'app-modals',
@@ -44,19 +46,10 @@ export class ModalsComponent implements OnDestroy {
     const modal = this.modalService.create({
       nzTitle: 'Ввод значений',
       nzContent: KeoMeasureComponent,
-      // nzData: {
-      //   params: {
-      //     result: item.measurement_results?.result,
-      //     measurements: item.measurement_results?.measurements,
-      //     coverage_rate: item.measurement_results?.coverage_rate,
-      //     measuring: item.measurement_results?.measuring,
-      //     uncertainty: item.measurement_results?.uncertainty,
-      //     rounded_measuring: item.measurement_results?.rounded_measuring,
-      //     uncertainty_type: item.measurement_results?.uncertainty_type,
-      //     values_for_uncertainty:
-      //       item.measurement_results?.values_for_uncertainty,
-      //   },
-      // },
+      nzData: {
+        keo_groups: mockKeo,
+        illumination_type: KEO_TYPE.horizontal,
+      },
       nzCentered: true,
       nzWidth: '90vw',
       nzViewContainerRef: this.containerRef,
