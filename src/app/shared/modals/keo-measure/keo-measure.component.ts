@@ -65,6 +65,7 @@ export class KeoMeasureComponent implements OnInit {
 
   @Input()
   params: CombinedForms | null = null;
+  currentSquareParam: number = 2;
 
   isKeoBlockLocked: boolean = true;
 
@@ -86,14 +87,17 @@ export class KeoMeasureComponent implements OnInit {
     this.keoDotsFormService.manageKeoResultDisabled(type);
   }
 
-  emitSquareValue(value: number): void {}
+  emitSquareValue(value: number): void {
+    this.currentSquareParam = value;
+  }
 
   getKeoMeasurements(keoUpdateGroup: KeoUpdateGroup): void {
     if (this.illumination_protocol) {
       const { keo_percent, keo_result } =
         this.keoMeasureService.getKeoGroupCalculations(
           keoUpdateGroup,
-          this.illumination_protocol
+          this.illumination_protocol,
+          this.currentSquareParam
         );
       this.keoDotsFormService.updateKeoResult({
         ...keoUpdateGroup,

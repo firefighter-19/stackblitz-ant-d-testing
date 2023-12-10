@@ -15,7 +15,8 @@ export class KeoMeasureService {
 
   getKeoGroupCalculations(
     { keo_group_index, keo_measure_group_index }: KeoUpdateGroup,
-    protocol: KEO_PROTOCOLS
+    protocol: KEO_PROTOCOLS,
+    currentSquareParam: number
   ): KeoGroupResultCalculation {
     const keoGroup = this.keoDotsFormService.getKeoGroup.controls[
       keo_group_index
@@ -38,7 +39,7 @@ export class KeoMeasureService {
       ),
       [KEO_PROTOCOLS.common]: {} as KeoMeasurement,
     };
-    const keoForMeasureGroup = calc[protocol].keo_percent;
+    const keoForMeasureGroup = currentSquareParam * calc[protocol].keo_percent;
     return {
       keo_percent: keoForMeasureGroup,
       keo_result: this.calculateAverageKeo([
