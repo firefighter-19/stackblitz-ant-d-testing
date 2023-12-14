@@ -1,5 +1,4 @@
-<div *ngIf="getForm">
-  <p>air-measure works!</p>
+<div>
   <button nz-button nzType="primary" (click)="addMeasureGroup()">
     <span nz-icon nzType="edit" nzTheme="outline"></span>
   </button>
@@ -17,12 +16,12 @@
           trackBy: provideUnique
         "
         [nzHeader]="tableGroup.name"
+        [nzActive]="tableGroup.value === airBlocks.middle"
         [nzDisabled]="tableGroup.value !== airBlocks.middle && !fullDuty"
       >
         <table
           [cellPadding]="10"
           [cellSpacing]="10"
-          width="40%"
           [formGroup]="measureGroup.get(tableGroup.value | stringPipe)"
         >
           <thead>
@@ -35,8 +34,10 @@
             >
               <tr *ngIf="airBlock.key === 'measures'">
                 <th></th>
-                <th *ngFor="let airBlock of getRowsTitle">
-                  <nz-form-label nzNoColon> {{ airBlock }} м </nz-form-label>
+                <th class="th" *ngFor="let airBlock of getRowsTitle">
+                  <nz-form-item>
+                    <nz-form-text>{{ airBlock }} м </nz-form-text>
+                  </nz-form-item>
                 </th>
                 <th></th>
               </tr>

@@ -21,7 +21,7 @@ export class AirMeasureService {
         acc[cur] = {
           measures: splitMeasures.reduce(
             (measureAcc: Record<string, Array<number | null>>, curMeasure) => {
-              measureAcc[curMeasure] = [1, 2, 3, 4, 5];
+              measureAcc[curMeasure] = new Array(5).fill(0);
               return measureAcc;
             },
             {}

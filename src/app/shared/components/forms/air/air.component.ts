@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   Input,
   OnInit,
@@ -8,7 +7,7 @@ import {
   PipeTransform,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AirBlocks, AirFormModel, AverageUpdate } from './air.model';
+import { AirBlocks, AirFormModel } from './air.model';
 import { AirFormService } from './air.service';
 import {
   FormArray,
@@ -54,10 +53,7 @@ export class StrPipe implements PipeTransform {
   providers: [AirFormService],
 })
 export class AirComponent implements OnInit {
-  constructor(
-    private readonly airFormService: AirFormService,
-    private readonly cdr: ChangeDetectorRef
-  ) {
+  constructor(private readonly airFormService: AirFormService) {
     this.getFixedValue = this.getFixedValue.bind(this);
   }
   @Input() fullDuty: boolean = false;
@@ -67,7 +63,6 @@ export class AirComponent implements OnInit {
   ngOnInit(): void {
     if (this.formModel) {
       this.airFormService.initForm(this.formModel);
-      this.getForm?.valueChanges.subscribe((x) => console.log(x));
     }
   }
 

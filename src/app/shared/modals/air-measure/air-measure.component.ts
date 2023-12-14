@@ -20,14 +20,16 @@ import { AirBlocks, AirFormModel } from '../../components/forms/air/air.model';
 })
 export class AirMeasureComponent implements OnInit {
   constructor(private readonly airMeasureService: AirMeasureService) {}
-  @Input() height_from_floor: string = '0,1; 0,6; 1,7';
+  @Input() height_from_floor: string = '0,1; 0,6; 1,7; 2,8';
+  @Input() airModel: AirFormModel | null = null;
   formModel: AirFormModel | null = null;
 
   ngOnInit(): void {
-    this.formModel = this.airMeasureService.createAirModel(
-      AirBlocks,
-      this.height_from_floor
-    );
-    console.log('this.formModel11 ===========>: ', this.formModel);
+    if (!this.airModel) {
+      this.formModel = this.airMeasureService.createAirModel(
+        AirBlocks,
+        this.height_from_floor
+      );
+    }
   }
 }

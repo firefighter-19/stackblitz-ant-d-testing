@@ -1,13 +1,7 @@
 import { Injectable } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DynamicFormCreationService } from 'src/app/shared/utils/services/dynamic-form-creation';
-import { AirFormModel, AverageUpdate } from './air.model';
+import { AirBlocks, AirFormModel, AverageUpdate } from './air.model';
 
 const LIMIT_OF_CREATION = 10;
 const MINIMUM_GROUPS = 3;
@@ -55,14 +49,20 @@ export class AirFormService {
 
   removeDotGroup(i: number): void {
     (this.getAirForm?.controls['measurements'] as FormArray).controls.forEach(
-      (group) => {
+      (group, index) => {
         Object.keys(group.value).forEach((key) => {
           const groupValue = (group as FormGroup).controls[key] as FormGroup;
           const measureGroups = groupValue.controls['measures'] as FormGroup;
-          Object.keys(measureGroups.value).forEach((measureKey) => {
+          Object.keys(measureGroups.value).forEach((measureKey, colIndex) => {
             const dotsGroup = measureGroups.controls[measureKey] as FormArray;
             if (dotsGroup.value.length > MINIMUM_GROUPS) {
               (measureGroups.controls[measureKey] as FormArray).removeAt(i);
+              this.updateAverage({
+                formIndex: index,
+                airBlockKey: key as AirBlocks,
+                colIndex,
+                colKey: measureKey,
+              });
             }
           });
         });
