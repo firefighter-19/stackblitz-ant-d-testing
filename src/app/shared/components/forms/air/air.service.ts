@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { DynamicFormCreationService } from 'src/app/shared/utils/services/dynamic-form-creation';
-import { AirFormModel } from './air.model';
+import { AirFormModel, AverageUpdate } from './air.model';
 
 const LIMIT_OF_CREATION = 10;
 const MINIMUM_GROUPS = 3;
@@ -22,6 +22,10 @@ export class AirFormService {
 
   get getAirForm() {
     return this.form;
+  }
+
+  get getAirMeasurements(): FormArray {
+    return this.getAirForm?.controls['measurements'] as FormArray;
   }
 
   initForm(object: AirFormModel): void {
@@ -64,5 +68,30 @@ export class AirFormService {
         });
       }
     );
+  }
+
+  updateAverage({
+    formIndex,
+    airBlockKey,
+    colIndex,
+    colKey,
+  }: AverageUpdate): void {
+    const measureCol = (
+      (this.getAirMeasurements.controls[formIndex] as FormGroup).controls[
+        airBlockKey
+      ] as FormGroup
+    ).controls['measures'].value[colKey];
+
+    const averageForColumn =
+      measureCol.reduce((acc: number, cur: number) => acc + cur, 0) /
+      measureCol.length;
+    const averageCell = (
+      (
+        (this.getAirMeasurements.controls[formIndex] as FormGroup).controls[
+          airBlockKey
+        ] as FormGroup
+      ).controls['averageMeasure'] as FormArray
+    ).controls[colIndex];
+    averageCell.patchValue(averageForColumn);
   }
 }

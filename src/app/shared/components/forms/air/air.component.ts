@@ -8,7 +8,7 @@ import {
   PipeTransform,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AirBlocks, AirFormModel } from './air.model';
+import { AirBlocks, AirFormModel, AverageUpdate } from './air.model';
 import { AirFormService } from './air.service';
 import {
   FormArray,
@@ -22,21 +22,6 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
-
-@Pipe({
-  name: 'objectPipe',
-  standalone: true,
-})
-export class ObjectPipe implements PipeTransform {
-  transform(value: unknown): Record<string, any> {
-    return Object.keys(
-      value as Record<string | number | symbol, unknown>
-    ).reduce((acc, cur) => {
-      acc[cur] = (value as Record<string | number | symbol, unknown>)[cur];
-      return acc;
-    }, {} as Record<string, unknown>);
-  }
-}
 
 @Pipe({
   name: 'stringPipe',
@@ -56,7 +41,6 @@ export class StrPipe implements PipeTransform {
     ReactiveFormsModule,
     FormsModule,
     StrPipe,
-    ObjectPipe,
     NzFormModule,
     NzInputNumberModule,
     NzDividerModule,
@@ -73,7 +57,9 @@ export class AirComponent implements OnInit {
   constructor(
     private readonly airFormService: AirFormService,
     private readonly cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.getFixedValue = this.getFixedValue.bind(this);
+  }
   @Input() fullDuty: boolean = false;
   @Input() formModel: AirFormModel | null = null;
 
@@ -83,6 +69,10 @@ export class AirComponent implements OnInit {
       this.airFormService.initForm(this.formModel);
       this.getForm?.valueChanges.subscribe((x) => console.log(x));
     }
+  }
+
+  getFixedValue(value: number): string {
+    return value.toFixed(2);
   }
 
   provideUnique(index: number): number {
@@ -103,8 +93,20 @@ export class AirComponent implements OnInit {
     ] as FormArray<FormGroup>;
   }
 
-  get getAirMeasurementsBlocks(): string[] {
-    return Object.keys(this.getAirMeasurements.value[0]);
+  get getAirMeasurementsBlocks(): { name: string; value: string }[] {
+    return Object.keys(this.getAirMeasurements.value[0]).map((value) => ({
+      name: this.convertLanguage(value as AirBlocks),
+      value: value,
+    }));
+  }
+
+  private convertLanguage(value: AirBlocks): string {
+    const obj = {
+      [AirBlocks.beginning]: 'Начало',
+      [AirBlocks.middle]: 'Середина',
+      [AirBlocks.end]: 'Конец',
+    };
+    return obj[value];
   }
 
   get getMeasureRows(): number[] {
@@ -137,5 +139,19 @@ export class AirComponent implements OnInit {
 
   removeMeasureGroup(i: number): void {
     this.airFormService.removeDotGroup(i);
+  }
+
+  onDotValueChange(
+    formIndex: number,
+    airBlockKey: any,
+    colIndex: number,
+    colKey: any
+  ): void {
+    this.airFormService.updateAverage({
+      formIndex,
+      airBlockKey,
+      colIndex,
+      colKey,
+    });
   }
 }

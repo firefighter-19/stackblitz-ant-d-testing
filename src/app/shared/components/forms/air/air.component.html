@@ -16,19 +16,19 @@
           let tableGroup of getAirMeasurementsBlocks;
           trackBy: provideUnique
         "
-        [nzHeader]="tableGroup"
-        [nzDisabled]="tableGroup !== airBlocks.middle && !fullDuty"
+        [nzHeader]="tableGroup.name"
+        [nzDisabled]="tableGroup.value !== airBlocks.middle && !fullDuty"
       >
         <table
           [cellPadding]="10"
           [cellSpacing]="10"
           width="40%"
-          [formGroup]="measureGroup.get(tableGroup | stringPipe)"
+          [formGroup]="measureGroup.get(tableGroup.value | stringPipe)"
         >
           <thead>
             <ng-container
               *ngFor="
-                let airBlock of measureGroup.value[tableGroup] | keyvalue;
+                let airBlock of measureGroup.value[tableGroup.value] | keyvalue;
                 trackBy: provideUnique
               "
               [formGroupName]="airBlock.key | stringPipe"
@@ -52,32 +52,41 @@
                 <ng-container *ngSwitchCase="'measures'">
                   <tr
                     *ngFor="
-                      let col of getMeasureRows;
-                      let colIndex = index;
+                      let row of getMeasureRows;
+                      let rowIndex = index;
                       trackBy: provideUnique
                     "
                   >
                     <td>
                       <nz-form-item>
                         <nz-form-label nzNoColon
-                          >Изм. {{ colIndex + 1 }}</nz-form-label
+                          >Изм. {{ rowIndex + 1 }}</nz-form-label
                         >
                       </nz-form-item>
                     </td>
                     <td
                       *ngFor="
-                        let row of measureGroup.value[tableGroup][airBlock]
-                          | keyvalue;
+                        let col of measureGroup.value[tableGroup.value][
+                          airBlock
+                        ] | keyvalue;
                         trackBy: uniqueObjectKey;
-                        let rowIndex = index
+                        let colIndex = index
                       "
-                      [formArrayName]="row.key | stringPipe"
+                      [formArrayName]="col.key | stringPipe"
                     >
                       <nz-form-item>
                         <nz-form-label nzNoColon></nz-form-label>
                         <nz-form-control>
                           <nz-input-number
-                            [formControlName]="colIndex"
+                            (ngModelChange)="
+                              onDotValueChange(
+                                i,
+                                tableGroup.value,
+                                colIndex,
+                                col.key
+                              )
+                            "
+                            [formControlName]="rowIndex"
                             [nzMin]="1"
                             [nzMax]="10"
                             [nzStep]="0.01"
@@ -90,7 +99,7 @@
                         *ngIf="getMeasureRows.length > 3"
                         nz-button
                         nzType="primary"
-                        (click)="removeMeasureGroup(colIndex)"
+                        (click)="removeMeasureGroup(rowIndex)"
                         nzDanger
                       >
                         <span nz-icon nzType="delete" nzTheme="outline"></span>
@@ -102,7 +111,9 @@
                   <td>Среднее за период</td>
                   <td
                     *ngFor="
-                      let average of measureGroup.value[tableGroup][airBlock];
+                      let average of measureGroup.value[tableGroup.value][
+                        airBlock
+                      ];
                       let colIndex = index;
                       trackBy: provideUnique
                     "
@@ -110,6 +121,8 @@
                     <nz-input-number
                       nzDisabled
                       [formControlName]="colIndex"
+                      [nzFormatter]="getFixedValue"
+                      [nzStep]="0.01"
                       [nzMin]="1"
                     ></nz-input-number>
                   </td>

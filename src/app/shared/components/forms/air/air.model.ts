@@ -15,6 +15,13 @@ export interface DotAirMeasure {
   averageMeasure: number[];
 }
 
+export type AverageUpdate = {
+  formIndex: number;
+  airBlockKey: AirBlocks;
+  colIndex: number;
+  colKey: string;
+};
+
 const mockAir: AirFormModel = {
   measurements: [
     {
