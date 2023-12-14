@@ -14,6 +14,9 @@ import { Subject, filter, takeUntil } from 'rxjs';
 import { KeoMeasureComponent } from 'src/app/shared/modals/keo-measure/keo-measure.component';
 import { mockKeo } from './mock';
 import { KEO_TYPE } from 'src/app/shared/components/forms/keo-dots/keo-dots.model';
+import { IlluminationResultComponent } from 'src/app/shared/modals/illumination-result/illumination-result.component';
+import { BrightnessComponent } from 'src/app/shared/modals/brightness/brightness.component';
+import { AirMeasureComponent } from 'src/app/shared/modals/air-measure/air-measure.component';
 
 @Component({
   selector: 'app-modals',
@@ -29,17 +32,17 @@ export class ModalsComponent implements OnDestroy {
   private readonly destroyRef$ = new Subject<boolean>();
 
   createIlluminationModal(): void {
-    // const modal = this.modalService.create({
-    //   nzTitle: 'Ввод значений',
-    //   nzContent: IlluminationResultComponent,
-    //   nzCentered: true,
-    //   nzWidth: '600px',
-    //   nzViewContainerRef: this.containerRef,
-    //   nzClosable: true,
-    // });
-    // modal.afterClose
-    //   .pipe(takeUntil(this.destroyRef$))
-    //   .subscribe((res) => console.log(res));
+    const modal = this.modalService.create({
+      nzTitle: 'Ввод значений',
+      nzContent: IlluminationResultComponent,
+      nzCentered: true,
+      nzWidth: '600px',
+      nzViewContainerRef: this.containerRef,
+      nzClosable: true,
+    });
+    modal.afterClose
+      .pipe(takeUntil(this.destroyRef$))
+      .subscribe((res) => console.log(res));
   }
 
   createKeoModal(): void {
@@ -48,7 +51,7 @@ export class ModalsComponent implements OnDestroy {
       nzContent: KeoMeasureComponent,
       nzData: {
         keo_groups: mockKeo,
-        illumination_type: KEO_TYPE.horizontal,
+        illumination_type: KEO_TYPE.ceiling,
       },
       nzCentered: true,
       nzWidth: '90vw',
@@ -83,17 +86,31 @@ export class ModalsComponent implements OnDestroy {
   }
 
   createBrightnessModal(): void {
-    // const modal = this.modalService.create({
-    //   nzTitle: 'Ввод значений',
-    //   nzContent: BrightnessComponent,
-    //   nzCentered: true,
-    //   nzWidth: '100%',
-    //   nzViewContainerRef: this.containerRef,
-    //   nzClosable: true,
-    // });
-    // modal.afterClose
-    //   .pipe(takeUntil(this.destroyRef$))
-    //   .subscribe((res) => console.log(res));
+    const modal = this.modalService.create({
+      nzTitle: 'Ввод значений',
+      nzContent: BrightnessComponent,
+      nzCentered: true,
+      nzWidth: '100%',
+      nzViewContainerRef: this.containerRef,
+      nzClosable: true,
+    });
+    modal.afterClose
+      .pipe(takeUntil(this.destroyRef$))
+      .subscribe((res) => console.log(res));
+  }
+
+  createAirModal(): void {
+    const modal = this.modalService.create({
+      nzTitle: 'Ввод значений',
+      nzContent: AirMeasureComponent,
+      nzCentered: true,
+      nzWidth: '100%',
+      nzViewContainerRef: this.containerRef,
+      nzClosable: true,
+    });
+    modal.afterClose
+      .pipe(takeUntil(this.destroyRef$))
+      .subscribe((res) => console.log(res));
   }
 
   ngOnDestroy(): void {

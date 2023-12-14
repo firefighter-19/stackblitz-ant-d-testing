@@ -61,4 +61,8 @@ export class KeoMeasureService {
       }
     }
   }
+
+  calculateUncertainty(): number {
+    return 0;
+  }
 }
