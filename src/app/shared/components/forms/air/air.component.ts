@@ -82,10 +82,6 @@ export class AirComponent implements OnInit {
     if (this.formModel) {
       this.airFormService.initForm(this.formModel);
       this.getForm?.valueChanges.subscribe((x) => console.log(x));
-      console.log(
-        'this.getAirMeasurementsBlocks ===========>: ',
-        this.getAirMeasurementsBlocks
-      );
     }
   }
 
@@ -93,13 +89,9 @@ export class AirComponent implements OnInit {
     return index;
   }
 
-  uniqueObjectKey(index: number, name: any): number {
-    return name;
+  uniqueObjectKey(index: number, name: any): string {
+    return `${name.key}${name.value[index]}`;
   }
-
-  // uniqueAirBlock(index: number, name: any): number {
-  //   return name.value[index];
-  // }
 
   get getForm(): FormGroup | null {
     return this.airFormService.getAirForm;
@@ -128,6 +120,14 @@ export class AirComponent implements OnInit {
       this.airFormService.getAirForm?.controls['measurements'].value[0][
         AirBlocks.middle
       ]
+    );
+  }
+
+  get getRowsTitle(): string[] {
+    return Object.keys(
+      this.airFormService.getAirForm?.controls['measurements'].value[0][
+        AirBlocks.middle
+      ]['measures']
     );
   }
 

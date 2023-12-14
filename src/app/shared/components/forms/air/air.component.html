@@ -35,13 +35,8 @@
             >
               <tr *ngIf="airBlock.key === 'measures'">
                 <th></th>
-                <th
-                  class="th"
-                  *ngFor="let row of airBlock.value | objectPipe | keyvalue"
-                >
-                  <nz-form-label nzLabelAlign="right" nzNoColon>
-                    {{ row.key }} м
-                  </nz-form-label>
+                <th *ngFor="let airBlock of getRowsTitle">
+                  <nz-form-label nzNoColon> {{ airBlock }} м </nz-form-label>
                 </th>
                 <th></th>
               </tr>
@@ -55,7 +50,13 @@
             >
               <ng-container [ngSwitch]="airBlock">
                 <ng-container *ngSwitchCase="'measures'">
-                  <tr *ngFor="let col of getMeasureRows; let colIndex = index">
+                  <tr
+                    *ngFor="
+                      let col of getMeasureRows;
+                      let colIndex = index;
+                      trackBy: provideUnique
+                    "
+                  >
                     <td>
                       <nz-form-item>
                         <nz-form-label nzNoColon
@@ -67,7 +68,7 @@
                       *ngFor="
                         let row of measureGroup.value[tableGroup][airBlock]
                           | keyvalue;
-                        trackBy: provideUnique;
+                        trackBy: uniqueObjectKey;
                         let rowIndex = index
                       "
                       [formArrayName]="row.key | stringPipe"
